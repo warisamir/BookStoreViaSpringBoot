@@ -3,6 +3,7 @@ package com.mongoDB.BookStore.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -16,12 +17,13 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(){
-        UserDetails userDetail1= User.withUsername("User1").password(passwordEncoder().encode("waris")).build();
-        UserDetails userDetails2= User.withUsername("User2").password(passwordEncoder().encode("aman")).build();
-        UserDetails userDetails3= User.withUsername("Admin").password(passwordEncoder().encode("aman")).build();
+        UserDetails userDetail1= User.withUsername("User1").password(passwordEncoder().encode("waris")).roles("USER").build();
+        UserDetails userDetails2= User.withUsername("User2").password(passwordEncoder().encode("aman")).roles("USER").build();
+        UserDetails userDetails3= User.withUsername("Admin").password(passwordEncoder().encode("aman")).roles("ADMIN").build();
         return new InMemoryUserDetailsManager(userDetail1,userDetails2,userDetails3);
     }
     @Bean
