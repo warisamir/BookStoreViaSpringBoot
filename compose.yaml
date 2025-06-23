@@ -10,4 +10,4 @@ services:
 #  ollama:
 #    image: 'ollama/ollama:latest'
 #    ports:
-#      - '11434'
+#      - '11434'h -v
