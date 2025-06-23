@@ -16,7 +16,10 @@ public class BookController {
     public BookController(BookService bookService){
         this.bookService=bookService;
     }
-
+    @GetMapping("/welcome")
+    public ResponseEntity<String> welcomeMessage(){
+        return new ResponseEntity<>("Welcome to this site",HttpStatus.OK);
+    }
     @GetMapping("/{bookId}")
     public ResponseEntity<BookDto> getBook(@PathVariable  String bookId){
         BookDto bookDto= bookService.getBook(bookId);
