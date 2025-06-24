@@ -1,7 +1,10 @@
 package com.mongoDB.BookStore.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,17 +18,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
+import java.net.Authenticator;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    @Bean
-    public UserDetailsService userDetailsService(){
-        UserDetails userDetail1= User.withUsername("User1").password(passwordEncoder().encode("waris")).roles("USER").build();
-        UserDetails userDetails2= User.withUsername("User2").password(passwordEncoder().encode("aman")).roles("USER").build();
-        UserDetails userDetails3= User.withUsername("Admin").password(passwordEncoder().encode("aman")).roles("ADMIN").build();
-        return new InMemoryUserDetailsManager(userDetail1,userDetails2,userDetails3);
-    }
+//    @Bean
+//    public UserDetailsService userDetailsService(){
+//        UserDetails userDetail1= User.withUsername("User1").password(passwordEncoder().encode("waris")).roles("USER").build();
+//        UserDetails userDetails2= User.withUsername("User2").password(passwordEncoder().encode("aman")).roles("USER").build();
+//        UserDetails userDetails3= User.withUsername("Admin").password(passwordEncoder().encode("aman")).roles("ADMIN").build();
+//        return new InMemoryUserDetailsManager(userDetail1,userDetails2,userDetails3);
+//    }
+
+    @Autowired
+    private UserDetailsService userDetailsService;
     @Bean
     PasswordEncoder passwordEncoder(){
         return  new BCryptPasswordEncoder();
@@ -33,9 +41,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(csrfCustomizer->csrfCustomizer.disable());
-        httpSecurity.authorizeHttpRequests(request-> request.requestMatchers("/bookStore/welcome").permitAll().anyRequest().authenticated());
+        httpSecurity.authorizeHttpRequests(request-> request.requestMatchers("/bookStore/welcome","/userInfo/register").permitAll().anyRequest().authenticated());
         httpSecurity.httpBasic(Customizer.withDefaults());
         httpSecurity.sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return httpSecurity.build();
+    }
+    public AuthenticationProvider authenticationProvider(){
+        DaoAuthenticationProvider daoAuthenticationProvider=new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        return daoAuthenticationProvider;
     }
 }
