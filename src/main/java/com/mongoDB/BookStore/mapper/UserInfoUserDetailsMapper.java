@@ -14,28 +14,28 @@ import java.util.stream.Collectors;
 public class UserInfoUserDetailsMapper implements UserDetails {
     private String userName;
     private String password;
-    private List<GrantedAuthority> grantedAuthorities;
+    private final List<GrantedAuthority> grantedAuthorities;
     public UserInfoUserDetailsMapper(UserInfo userInfo){
         userName=userInfo.getUserName();
         password=userInfo.getPassword();
-        for (GrantedAuthority grantedAuthority : grantedAuthorities = Arrays.stream(userInfo.getRoles().split(",")).map(SimpleGrantedAuthority::new).collect(Collectors.toList())) {
-            
-        }
-
+        grantedAuthorities = Arrays.stream(userInfo.getRoles().split(","))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+        System.out.println(grantedAuthorities);
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return grantedAuthorities;
     }
 
     @Override
     public String getPassword() {
-        return "";
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return "";
+        return userName;
     }
 
     @Override
